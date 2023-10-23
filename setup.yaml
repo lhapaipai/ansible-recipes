@@ -1,0 +1,45 @@
+---
+- name: Installation du serveur
+  hosts: all
+  tags: common
+  roles: [common]
+
+- name: Firewall
+  hosts: all
+  tags: firewall
+  roles: [firewall]
+
+- name: Installation de l'environnement des utilisateurs
+  hosts: all
+  tags: user-env
+  roles: [user-env]
+
+- name: Installation de docker
+  hosts: all
+  tags: docker
+  roles: [docker]
+
+- name: Installation de l'environnement web
+  hosts: all
+  tags: webserver
+  roles: [php, caddy]
+
+- name: Installation d'un base de données mariadb
+  hosts: all
+  tags: mariadb
+  roles: [mariadb]
+
+- name: NodeJS
+  hosts: all
+  tags: nodejs
+  roles: [nodejs]
+
+
+
+# - name: Sandbox
+#   hosts: all
+
+#   tags: sandbox
+
+#   roles:
+#     - sandbox

@@ -1,0 +1,15 @@
+---
+- name: add caddy apt key
+  ansible.builtin.apt_key:
+    url: https://dl.cloudsmith.io/public/caddy/stable/gpg.key
+    keyring: /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+
+- name: add caddy repository
+  ansible.builtin.apt_repository:
+    repo: deb [signed-by=/usr/share/keyrings/caddy-stable-archive-keyring.gpg] https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main
+    state: present
+    
+- name: install caddy server
+  ansible.builtin.apt:
+    update_cache: true
+    name: caddy

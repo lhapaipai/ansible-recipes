@@ -1,0 +1,49 @@
+---
+# for url of the repositories
+# https://mariadb.org/download/?t=repo-config&d=22.04+%22jammy%22&v=11.1&r_m=mva
+- name: Install dependencies
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - curl
+    state: present
+
+- name: Add MariaDB repository key
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/get_url_module.html
+  ansible.builtin.get_url:
+    url: https://mariadb.org/mariadb_release_signing_key.pgp
+    dest: /etc/apt/keyrings/mariadb-keyring.pgp
+
+- name: Add MariaDB apt sources file
+  ansible.builtin.copy:
+    src: mariadb.sources
+    dest: /etc/apt/sources.list.d/mariadb.sources
+
+- name: Install MariaDB Server
+  ansible.builtin.apt:
+    update_cache: true
+    name:
+      - mariadb-server
+      # nécessaire pour utiliser les modules community.mysql
+      - python3-pymysql
+
+- name: Set root password
+  shell: mariadb-admin password {{ mariadb_root_password }}
+
+- name: Add root credentials file
+  ansible.builtin.template:
+    src: .my.cnf.j2
+    dest: /root/.my.cnf
+
+- name: Create Database {{ mariadb_db }}
+  community.mysql.mysql_db:
+    db: "{{ mariadb_db }}"
+    state: present
+
+- name: Create Database user
+  community.mysql.mysql_user:
+    name: "{{ mariadb_user }}"
+    password: "{{ mariadb_password }}"
+    state: present
+    host: localhost
+    priv: "{{ mariadb_db }}.*:ALL"

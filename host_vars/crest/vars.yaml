@@ -1,0 +1,29 @@
+---
+hostname: crest
+
+ansible_user: root
+
+admin_user: lhapaipai
+admin_password: "{{ vault_admin_password }}"
+
+basic_user: basic
+basic_password: "{{ vault_basic_password }}"
+
+php_version: 8.2
+
+distrib_codename: jammy
+
+server_hostname: crest.pentatrion.com
+
+mariadb_root_password: "{{ vault_mariadb_root_password }}"
+
+mariadb_user: harry
+mariadb_password: "{{ vault_mariadb_password }}"
+mariadb_db: harry
+
+# between 16 | 18 | 20 | 21
+node_version: 21
+
+npm_globals:
+  - pm2
+  - pnpm

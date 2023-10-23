@@ -1,0 +1,7 @@
+---
+# - debug:
+#     var: vault_mariadb_root_password
+- debug:
+    var: dev_secret
+# - debug:
+#     var: prod_secret

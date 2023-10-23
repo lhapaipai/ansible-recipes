@@ -1,0 +1,61 @@
+---
+- name: add ondrej/php repository
+  # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_repository_module.html
+  ansible.builtin.apt_repository:
+    repo: ppa:ondrej/php
+    state: present
+
+- name: Install
+  ansible.builtin.apt:
+    update_cache: true
+    name:
+      - php{{ php_version }}-fpm
+      - php{{ php_version }}-bcmath
+      - php{{ php_version }}-intl
+      - php{{ php_version }}-mbstring
+      - php{{ php_version }}-xml
+      - php{{ php_version }}-pgsql
+      - php{{ php_version }}-gd
+      - php{{ php_version }}-curl
+      # - php{{ php_version }}-xdebug
+    state: present
+
+# - name: enable extensions
+#   ansible.builtin.lineinfile:
+#     dest: /etc/php/{{ php_version }}/fpm/php.ini
+#     regexp: "^;?\\s*extension={{ item }}$"
+#     line: "extension={{ item }}"
+#     state: present
+#   with_items:
+#     - curl
+#     - gd
+#     - intl
+#     - mbstring
+#     - pdo_pgsql
+#     - pgsql
+#   notify: php restart
+
+- name: Composer
+  ansible.builtin.shell:
+    cmd: |
+      curl -sS https://getcomposer.org/installer -o composer-setup.php
+
+      HASH=`curl -sS https://composer.github.io/installer.sig`
+      php -r "if (hash_file('SHA384', 'composer-setup.php') === '$HASH') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+
+      php composer-setup.php --filename=composer --install-dir=/usr/local/bin
+
+      rm -f composer-setup.php
+  args:
+    creates: /usr/local/bin/composer
+    warn: false
+
+- name: Symfony repository
+  ansible.builtin.apt_repository:
+    repo: deb [trusted=yes] https://repo.symfony.com/apt/ /
+    state: present
+
+- name: Symfony CLI install
+  ansible.builtin.apt:
+    update_cache: true
+    name: symfony-cli
